@@ -14,10 +14,10 @@ class PokemonBloc extends Bloc<PokemonEvent, PokemonState> {
   PokemonBloc() : super(PokemonState.initial()) {
     on<FetchPokemonList>(_onFetchPokemonList);
     on<FetchPokemonDetail>(_onFetchPokemonDetail);
+    on<SearchPokemon>(_onSearchPokemon);
   }
 
   /// Lógica para obtener la lista de Pokémon.
-  // Función para manejar el evento de cargar la lista de Pokémon
   Future<void> _onFetchPokemonList(
       FetchPokemonList event, Emitter<PokemonState> emit) async {
     emit(state.copyWith(isLoading: true, hasError: false));
@@ -34,7 +34,6 @@ class PokemonBloc extends Bloc<PokemonEvent, PokemonState> {
     }
   }
 
-  // Función para manejar el evento de cargar los detalles de un Pokémon
   Future<void> _onFetchPokemonDetail(
       FetchPokemonDetail event, Emitter<PokemonState> emit) async {
     emit(state.copyWith(isLoading: true, hasError: false));
@@ -50,6 +49,27 @@ class PokemonBloc extends Bloc<PokemonEvent, PokemonState> {
         isLoading: false,
         hasError: true,
         errorMessage: "Error al cargar los detalles: $e",
+      ));
+    }
+  }
+
+  Future<void> _onSearchPokemon(
+      SearchPokemon event, Emitter<PokemonState> emit) async {
+    final currentState = state;
+    emit(currentState.copyWith(isLoading: true, hasError: false));
+
+    try {
+      final filteredPokemons = currentState.pokemons
+          .where((pokemon) =>
+              pokemon.name.toLowerCase().contains(event.query.toLowerCase()))
+          .toList();
+
+      emit(state.copyWith(isLoading: false, pokemons: filteredPokemons));
+    } catch (e) {
+      emit(state.copyWith(
+        isLoading: false,
+        hasError: true,
+        errorMessage: "Error al filtrar los Pokémon: $e",
       ));
     }
   }

@@ -4,7 +4,6 @@
 export 'network/dio_client.dart';
 
 // Utils
-export 'utils/responsive.dart';
 export 'utils/strings.dart';
 
 // Router

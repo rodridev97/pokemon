@@ -1,4 +1,4 @@
-import '../../data/data.dart' show PokemonDetailModel, PokemonRemoteDataSource;
+import '../../data/data.dart' show PokemonRemoteDataSource;
 import '../domain.dart' show Pokemon, PokemonDetails;
 
 class PokemonRepository {
@@ -45,6 +45,8 @@ class PokemonRepository {
                 ?.map((ability) => ability.ability?.name ?? '')
                 .toList() ??
             [],
+        urlImage:
+            detailModel.sprites?.other?.officialArtwork?.frontDefault ?? '',
       );
     } catch (e) {
       throw Exception("Error al obtener los detalles del Pokémon: $e");

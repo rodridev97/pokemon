@@ -4,11 +4,20 @@ part of 'pokemon_bloc.dart';
 abstract class PokemonEvent {}
 
 @immutable
-sealed class FetchPokemonList extends PokemonEvent {}
+class FetchPokemonList extends PokemonEvent {}
 
 @immutable
-sealed class FetchPokemonDetail extends PokemonEvent {
+class FetchPokemonDetail extends PokemonEvent {
   final String url;
 
   FetchPokemonDetail(this.url);
+}
+
+class SearchPokemon extends PokemonEvent {
+  final String query;
+
+  SearchPokemon(this.query);
+
+  @override
+  List<Object> get props => [query];
 }

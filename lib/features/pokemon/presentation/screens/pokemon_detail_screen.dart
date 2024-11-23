@@ -1,9 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class PokemonDetailPage extends StatelessWidget {
+import '../../pokemon.dart' show PokemonBloc, PokemonState;
+
+class PokemonDetailScreen extends StatefulWidget {
   final String url;
 
-  const PokemonDetailPage({super.key, required this.url});
+  const PokemonDetailScreen({super.key, required this.url});
+
+  @override
+  State<PokemonDetailScreen> createState() => _PokemonDetailScreenState();
+}
+
+class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -11,59 +24,93 @@ class PokemonDetailPage extends StatelessWidget {
     final isTablet = size.width > 600;
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: isTablet ? 400.0 : 300.0,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                "Pokemon Name",
-                style: TextStyle(fontSize: isTablet ? 24 : 18),
-              ),
-              background: Image.network(
-                "https://via.placeholder.com/400",
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          SliverPadding(
-            padding: EdgeInsets.symmetric(
-              horizontal: isTablet ? 32.0 : 16.0,
-              vertical: 16.0,
-            ),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate(
-                [
-                  Text(
-                    "Details",
-                    style: TextStyle(
-                      fontSize: isTablet ? 28 : 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  DetailRow(label: "Height", value: "1.2m", isTablet: isTablet),
-                  const SizedBox(height: 10),
-                  DetailRow(label: "Weight", value: "40kg", isTablet: isTablet),
-                  const SizedBox(height: 10),
-                  Text(
-                    "Abilities",
+      body: BlocBuilder<PokemonBloc, PokemonState>(
+        builder: (context, state) {
+          if (state.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state.hasError) {
+            return const Center(child: Text("Error loading details"));
+          }
+
+          final pokemon = state.selectedPokemonDetails;
+
+          return CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                title: const Text(
+                  "Pokemon Details",
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                expandedHeight: isTablet ? 400.0 : 300.0,
+                pinned: true,
+                flexibleSpace: FlexibleSpaceBar(
+                  title: Text(
+                    "${pokemon?.name}",
                     style: TextStyle(
                       fontSize: isTablet ? 24 : 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Text(
-                    "- Ability 1\n- Ability 2",
-                    style: TextStyle(fontSize: isTablet ? 20 : 16),
+                  background: Image.network(
+                    pokemon?.urlImage ?? "https//via.placeholder.com/400",
+                    fit: BoxFit.cover,
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ],
+              SliverPadding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: isTablet ? 32.0 : 16.0,
+                  vertical: 16.0,
+                ),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate(
+                    [
+                      Text(
+                        "Details",
+                        style: TextStyle(
+                          fontSize: isTablet ? 28 : 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      DetailRow(
+                          label: "Height",
+                          value: "${pokemon?.height}m",
+                          isTablet: isTablet),
+                      const SizedBox(height: 10),
+                      DetailRow(
+                          label: "Weight",
+                          value: "${pokemon?.weight}kg",
+                          isTablet: isTablet),
+                      const SizedBox(height: 10),
+                      const Divider(),
+                      Text(
+                        "Abilities",
+                        style: TextStyle(
+                          fontSize: isTablet ? 24 : 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: pokemon?.abilities
+                                .map((ability) => Text(
+                                      "- $ability",
+                                      style: TextStyle(
+                                          fontSize: isTablet ? 20 : 16),
+                                    ))
+                                .toList() ??
+                            [],
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

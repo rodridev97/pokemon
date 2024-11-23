@@ -1,7 +1,7 @@
 import 'package:go_router/go_router.dart';
 
 import '../../features/pokemon/pokemon.dart'
-    show PokemonListScreen, PokemonDetailPage;
+    show Pokemon, PokemonDetailScreen, PokemonListScreen;
 
 class AppRouter {
   static final router = GoRouter(
@@ -13,8 +13,8 @@ class AppRouter {
       GoRoute(
         path: '/details',
         builder: (context, state) {
-          final url = state.pathParameters['url']!;
-          return PokemonDetailPage(url: url);
+          final url = (state.extra as Pokemon).url;
+          return PokemonDetailScreen(url: url);
         },
       ),
     ],

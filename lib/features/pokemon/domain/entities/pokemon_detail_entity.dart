@@ -5,6 +5,7 @@ class PokemonDetails {
   final String name;
   final double height;
   final double weight;
+  final String urlImage;
   final List<String> abilities;
 
   const PokemonDetails({
@@ -12,6 +13,7 @@ class PokemonDetails {
     required this.height,
     required this.weight,
     required this.abilities,
+    required this.urlImage,
   });
 
   // Factory constructor para mapear desde datos de la API
@@ -25,6 +27,8 @@ class PokemonDetails {
       height: json['height'],
       weight: json['weight'],
       abilities: abilities,
+      urlImage:
+          'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${json['id']}.png',
     );
   }
 }
